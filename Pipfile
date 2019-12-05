@@ -11,7 +11,8 @@ v = {editable = true,version = "*"}
 [packages]
 awscli = "*"
 apache-airflow = "*"
-
+kneaddata = "*"
+humann2 = "*"
 
 [requires]
 python_version = "3.7"
