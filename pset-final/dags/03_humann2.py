@@ -1,5 +1,5 @@
 '''
-02 - Humann2.py
+03 - Humann2.py
 DAG to run humann2(poop analyzer) locally for testing purposes
 '''
 
@@ -22,12 +22,12 @@ dag = DAG(
 humann_cmd = 'humann2_config --update database_folders utility_mapping /isilon_biodata/dchen05/humann2/utility_mapping && \
         humann2_config --update database_folders protein /isilon_biodata/dchen05/humann2/uniref && \
         humann2_config --update database_folders nucleotide /isilon_biodata/dchen05/humann2/chocophlan && \
-        humann2 --input $sample \
+        humann2 --input /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired.fastq \
                 --output /bioinformatics/dchen05/testing/output \
-                --threads $processors \
+                --threads 1 \
                 --search-mode uniref90 && \
-        humann2_renorm_table --input /bioinformatics/dchen05/testing/output/${sample_prefix}_genefamilies.tsv --output /bioinformatics/dchen05/testing/output/${sample_prefix}_genefamilies_relab.tsv --units relab && \
-        humann2_renorm_table --input /bioinformatics/dchen05/testing/output/${sample_prefix}_pathabundance.tsv --output /bioinformatics/dchen05/testing/output/${sample_prefix}_pathabundance_relab.tsv --units relab'
+        humann2_renorm_table --input /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired_genefamilies.tsv --output /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired_genefamilies_relab.tsv --units relab && \
+        humann2_renorm_table --input /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired_pathabundance.tsv --output /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired_pathabundance_relab.tsv --units relab'
 
 humann2 = BashOperator(
     task_id='analyzer', 
