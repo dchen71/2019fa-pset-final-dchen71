@@ -21,5 +21,5 @@ dag = DAG(
 
 kneaddata = BashOperator(
     task_id='kneading', 
-    bash_command='kneaddata -i {{ dag_run.conf["read1_dir"] }} -i {{ dag_run.conf["read2_dir"] }} -o {{ dag_run.conf["output_dir"] }} -db /isilon_biodata/dchen05/kneaddata', 
+    bash_command='kneaddata -i {{ dag_run.conf["read1_dir"] }} -i {{ dag_run.conf["read2_dir"] }} -o {{ dag_run.conf["output_dir"] }} -db /isilon_biodata/dchen05/kneaddata --trimmomatic /bioinformatics/dchen05/applications/Trimmomatic-0.36/', 
     dag=dag)
