@@ -21,5 +21,5 @@ dag = DAG(
 
 kneaddata = BashOperator(
     task_id='kneading', 
-    bash_command='kneaddata', 
+    bash_command='kneaddata -i /bioinformatics/dchen05/testing/HSM6XRUZ_R1.fastq.gz -i /bioinformatics/dchen05/testing/HSM6XRUZ_R2.fastq.gz -o /output/bioinformatics/dchen05/testing/output -db /isilon_biodata/dchen05/kneaddata', 
     dag=dag)
