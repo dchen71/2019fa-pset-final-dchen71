@@ -3,10 +3,9 @@
 DAG to run kneaddata(data cleaner) locally for testing purposes
 '''
 
-from builtins import range
-from airflow.operators import BashOperator, DummyOperator
+from airflow.operators.bash_operator import BashOperator
 from airflow.models import DAG
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Basic arguemnts to pass to Airflow
 args = {
