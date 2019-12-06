@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8677de24e73eb6850b897bc3a21683fbb7f2597ca73a6ffc99c4e40a35981b0b"
+            "sha256": "f0a4896db26078e215550ca8db8b937dafe851b929a7121f3d3b09e47479edcb"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -56,11 +56,11 @@
         },
         "awscli": {
             "hashes": [
-                "sha256:5d94d0e8e762dc393b9c197a419d3f2b9f1f6103266f2d7f01893577bda64d2a",
-                "sha256:9f09cfd37958fcc8eb1e8c945c3ede6016da6e4f217c12aeb5c187fec887137f"
+                "sha256:7ab73a6d01855ab38f039d2473a7e40b7654fc1ce31a9e68f378d855d77412ef",
+                "sha256:fb2260653e4397e7f5aee3c9ea2d9582ef4fdccdf75c17e1f85e44dbf6d21bf2"
             ],
             "index": "pypi",
-            "version": "==1.16.297"
+            "version": "==1.16.298"
         },
         "babel": {
             "hashes": [
@@ -71,10 +71,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:4861785b52b0b3f97da91613c31f8e501f12517c9c79482b44efbdb56b69aefc",
-                "sha256:9cc87d7906693c9c8fe862c574a1bebbe22a0475d6991e9b7251bc93cb1954d9"
+                "sha256:55c82a4eda277ae145691783c064b0d6600e60e80bd379ca07eaef1cfe34a148",
+                "sha256:7350d9bcaec0ec3127f808bfb75fa0114b5b6b09a485b0dba66d739c3654521b"
             ],
-            "version": "==1.13.33"
+            "version": "==1.13.34"
         },
         "cached-property": {
             "hashes": [
@@ -146,6 +146,14 @@
                 "sha256:42d8ef819367516592a825746a18073ced42ca169ab1f5f4044134703e7a049c"
             ],
             "version": "==0.3.1.1"
+        },
+        "docker": {
+            "hashes": [
+                "sha256:6e06c5e70ba4fad73e35f00c55a895a448398f3ada7faae072e2bb01348bafc1",
+                "sha256:8f93775b8bdae3a2df6bc9a5312cce564cade58d6555f2c2570165a1270cd8a7"
+            ],
+            "index": "pypi",
+            "version": "==4.1.0"
         },
         "docutils": {
             "hashes": [
@@ -425,10 +433,10 @@
         },
         "more-itertools": {
             "hashes": [
-                "sha256:53ff73f186307d9c8ef17a9600309154a6ae27f25579e80af4db8f047ba14bc2",
-                "sha256:a0ea684c39bc4315ba7aae406596ef191fd84f873d2d2751f84d64e81a7a2d45"
+                "sha256:57cc732766f26ddc424a4ed76d837677777a03f557c7ebeecb7e2be2888ce702",
+                "sha256:a293dbdad9d4d22e1e70832b8dcab72aac20805f0fa0575aec27cab8841e09ff"
             ],
-            "version": "==8.0.0"
+            "version": "==8.0.1"
         },
         "numpy": {
             "hashes": [
@@ -608,6 +616,7 @@
                 "sha256:bf47c0607522fdbca6c9e817a6e81b08491de50f3766a7a0e6a5be7905961b41",
                 "sha256:f81025eddd0327c7d4cfe9b62cf33190e1e736cc6e97502b3ec425f574b3e7a8"
             ],
+            "markers": "python_version != '2.6' and python_version != '3.3'",
             "version": "==5.1.2"
         },
         "requests": {
@@ -703,6 +712,13 @@
             "markers": "python_version >= '3.4'",
             "version": "==1.25.7"
         },
+        "websocket-client": {
+            "hashes": [
+                "sha256:1151d5fb3a62dc129164292e1227655e4bbc5dd5340a5165dfae61128ec50aa9",
+                "sha256:1fd5520878b68b84b5748bb30e592b10d0a91529d5383f74f4964e72b297fd3a"
+            ],
+            "version": "==0.56.0"
+        },
         "werkzeug": {
             "hashes": [
                 "sha256:7280924747b5733b246fe23972186c6b348f9ae29724135a6dfc1e53cea433e7",
@@ -787,10 +803,10 @@
         },
         "more-itertools": {
             "hashes": [
-                "sha256:53ff73f186307d9c8ef17a9600309154a6ae27f25579e80af4db8f047ba14bc2",
-                "sha256:a0ea684c39bc4315ba7aae406596ef191fd84f873d2d2751f84d64e81a7a2d45"
+                "sha256:57cc732766f26ddc424a4ed76d837677777a03f557c7ebeecb7e2be2888ce702",
+                "sha256:a293dbdad9d4d22e1e70832b8dcab72aac20805f0fa0575aec27cab8841e09ff"
             ],
-            "version": "==8.0.0"
+            "version": "==8.0.1"
         },
         "packaging": {
             "hashes": [

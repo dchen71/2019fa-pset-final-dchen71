@@ -13,6 +13,7 @@ awscli = "*"
 apache-airflow = "*"
 kneaddata = "*"
 humann2 = "*"
+docker = "*"
 
 [requires]
 python_version = "3.7"
