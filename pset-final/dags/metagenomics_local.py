@@ -20,20 +20,22 @@ dag = DAG(
     default_args=args,
     schedule_interval=None)
 
-{% set input_dir = '/bioinformatics/dchen05/testing/' %}
+kneaddata_templated_command = """
+kneaddata -i /bioinformatics/dchen05/testing/{{ dag_run.conf["read1_name"] }} -i /bioinformatics/dchen05/testing/{{ dag_run.conf["read2_name"] }} -o {{ dag_run.conf["output_dir"] }} -db /isilon_biodata/dchen05/kneaddata --trimmomatic /bioinformatics/dchen05/applications/Trimmomatic-0.36/ ; filename={{ dag_run.conf['read1_name'] }}; echo ${filename%%.*}
+"""
 
 # Run KneadData to preprocess the raw data 
 kneaddata = BashOperator(
     task_id='kneaddata', 
-    bash_command='kneaddata -i {{ input_dir + dag_run.conf["read1_name"] }} -i {{ input_dir + dag_run.conf["read2_name"] }} -o {{ dag_run.conf["output_dir"] }} -db /isilon_biodata/dchen05/kneaddata --trimmomatic /bioinformatics/dchen05/applications/Trimmomatic-0.36/', 
+    bash_command=kneaddata_templated_command, 
+    xcom_push = True,
     dag=dag)
 
-{% set base_name = os.path.splittext({{ dag_run.conf["read1_name"] }}) %}
 
 # Concatenate the paired end reads
 merge_reads = BashOperator(
     task_id='merge_paired_end_reads', 
-    bash_command='cat {{ dat_run.conf["output_dir"]}}/{base_name}_kneaddata_paired_1.fastq {{ dat_run.conf["output_dir"]}}/{base_name}_R1_kneaddata_paired_2.fastq > {{ dat_run.conf["output_dir"]}}/{base_name}_kneaddata_paired.fastq', 
+    bash_command="cat {{ dag_run.conf['output_dir']}}/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired_1.fastq {{ dag_run.conf['output_dir']}}/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired_2.fastq > {{ dag_run.conf['output_dir']}}/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired.fastq", 
     dag=dag)
 
 kneaddata >> merge_reads
@@ -42,15 +44,15 @@ kneaddata >> merge_reads
 humann_cmd = 'humann2_config --update database_folders utility_mapping /isilon_biodata/dchen05/humann2/utility_mapping && \
         humann2_config --update database_folders protein /isilon_biodata/dchen05/humann2/uniref && \
         humann2_config --update database_folders nucleotide /isilon_biodata/dchen05/humann2/chocophlan && \
-        humann2 --input /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired.fastq \
-                --output /bioinformatics/dchen05/testing/output \
+        humann2 --input {{ dag_run.conf["output_dir"]}}/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired.fastq \
+                --output {{ dag_run.conf["output_dir"]}} \
                 --threads 1 \
                 --search-mode uniref90 && \
-        humann2_renorm_table --input /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired_genefamilies.tsv --output /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired_genefamilies_relab.tsv --units relab && \
-        humann2_renorm_table --input /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired_pathabundance.tsv --output /bioinformatics/dchen05/testing/output/HSM6XRUZ_R1_kneaddata_paired_pathabundance_relab.tsv --units relab'
+        humann2_renorm_table --input {{ dag_run.conf["output_dir"]}}/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_genefamilies.tsv --output {{ dag_run.conf["output_dir"]}}/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_genefamilies_relab.tsv --units relab && \
+        humann2_renorm_table --input {{ dag_run.conf["output_dir"]}}/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_pathabundance.tsv --output {{ dag_run.conf["output_dir"]}}/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_pathabundance_relab.tsv --units relab'
 
 humann2 = BashOperator(
-    task_id='analyzer', 
+    task_id='humann2', 
     bash_command=humann_cmd, 
     dag=dag)
 
