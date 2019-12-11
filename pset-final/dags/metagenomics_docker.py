@@ -28,7 +28,7 @@ def download(**kwargs):
     s3 = S3Hook()
     r1 = kwargs['dag_run'].conf.get('read1_name')
     r2 = kwargs['dag_run'].conf.get('read2_name')
-    obj1 = s3.key_key('microbiome/' + r1,
+    obj1 = s3.get_key('microbiome/' + r1,
                       bucket_name = 'airflow-project')
     obj1.download_file('/home/ubuntu/2019fa-pset-final-dchen71/data/' + r1)
     obj2 = s3.get_key('microbiome/' + r2,
