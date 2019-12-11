@@ -45,7 +45,7 @@ downloader = PythonOperator(
 # Parse filename
 filename = BashOperator(
         task_id = 'parse_filename',
-        bash_command = "filename={{ dag_run.conf['read1_name'] }}; echo $(filename%%.*)",
+        bash_command = "filename={{ dag_run.conf['read1_name'] }}; echo ${filename%%.*}",
         xcom_push = True,
         dag = dag
         )
