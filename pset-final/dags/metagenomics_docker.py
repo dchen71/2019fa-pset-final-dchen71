@@ -93,4 +93,16 @@ humann2 = DockerOperator(
         dag = dag
         )
 
-downloader >> filename >> kneaddata >> merge_reads >> humann2
+# Define upload function
+def upload(**kwargs):
+    s3 = S3Hook()
+    files = os.listdir('/home/ubuntu/output/')
+    [s3.load_file('/home/ubuntu/output/' + file_name, 'output/' + file_name, bucket_name = 'airflow-project') for file_name in files]
+
+upload_task = PythonOperator(
+        python_callable = upload,
+        task_id = "upload_to_s3",
+        dag = dag
+        )
+
+downloader >> filename >> kneaddata >> merge_reads >> humann2 >> upload_task
