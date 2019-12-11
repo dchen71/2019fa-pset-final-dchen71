@@ -72,7 +72,7 @@ merge_reads = BashOperator(
 kneaddata >> merge_reads
 
 # Run Hummann2 to find bacterial populations
-humann_cmd = 'humann2_config --update database_folders utility_mapping /humann2/utility_mapping && \
+humann_cmd = 'sh -c \'humann2_config --update database_folders utility_mapping /humann2/utility_mapping && \
         humann2_config --update database_folders protein /humann2/uniref && \
         humann2_config --update database_folders nucleotide /humann2/chocophlan && \
         humann2 --input /output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired.fastq \
@@ -80,7 +80,7 @@ humann_cmd = 'humann2_config --update database_folders utility_mapping /humann2/
                 --threads 1 \
                 --search-mode uniref90 && \
         humann2_renorm_table --input /output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_genefamilies.tsv --output /output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_genefamilies_relab.tsv --units relab && \
-        humann2_renorm_table --input /output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_pathabundance.tsv --output /output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_pathabundance_relab.tsv --units relab'
+        humann2_renorm_table --input /output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_pathabundance.tsv --output /output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_pathabundance_relab.tsv --units relab\''
 
 humann2 = DockerOperator(
         task_id = 'humann2',
