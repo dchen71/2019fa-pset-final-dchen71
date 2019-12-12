@@ -98,6 +98,7 @@ def upload(**kwargs):
     s3 = S3Hook()
     files = os.listdir('/home/ubuntu/output/')
     [s3.load_file('/home/ubuntu/output/' + file_name, 'output/' + file_name, bucket_name = 'airflow-project') for file_name in files if not os.path.isdir('/home/ubuntu/output/' + file_name)]
+    [s3.load_file('/home/ubuntu/output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_humann2_temp/' + file_name, 'output/' + file_name, bucket_name = 'airflow-project', replace = True) for file_name in os.listdir('/home/ubuntu/output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_humann2_temp')]
 
 upload_task = PythonOperator(
         python_callable = upload,
