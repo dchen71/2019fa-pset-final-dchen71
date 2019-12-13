@@ -69,7 +69,6 @@ merge_reads = BashOperator(
     bash_command="cat /home/ubuntu/output/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired_1.fastq /home/ubuntu/output/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired_2.fastq > /home/ubuntu/output/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired.fastq", 
     dag=dag)
 
-kneaddata >> merge_reads
 
 # Run Hummann2 to find bacterial populations
 humann_cmd = 'sh -c \'humann2_config --update database_folders utility_mapping /humann2/utility_mapping && \
@@ -97,12 +96,14 @@ humann2 = DockerOperator(
 def upload(**kwargs):
     s3 = S3Hook()
     files = os.listdir('/home/ubuntu/output/')
+    file_base = context['ti'].xcom_pull(task_ids = "parse_filename")
     [s3.load_file('/home/ubuntu/output/' + file_name, 'output/' + file_name, bucket_name = 'airflow-project', replace = True) for file_name in files if not os.path.isdir('/home/ubuntu/output/' + file_name)]
-    [s3.load_file('/home/ubuntu/output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_humann2_temp/' + file_name, 'output/' + file_name, bucket_name = 'airflow-project', replace = True) for file_name in os.listdir('/home/ubuntu/output/{{ti.xcom_pull(key = "return_value")}}_kneaddata_paired_humann2_temp')]
+    [s3.load_file('/home/ubuntu/output/'+file_base+'_kneaddata_paired_humann2_temp/' + file_name, 'output/' + file_name, bucket_name = 'airflow-project', replace = True) for file_name in os.listdir('/home/ubuntu/output/'+file_base+'_kneaddata_paired_humann2_temp')]
 
 upload_task = PythonOperator(
         python_callable = upload,
         task_id = "upload_to_s3",
+        provide_context = True,
         dag = dag
         )
 
