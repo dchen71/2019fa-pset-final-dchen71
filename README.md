@@ -74,6 +74,15 @@ A quick overview of the operators and hooks used:
 
 ## How to Run
 
+### 00. Notes
+
+* It is recommended to at least have 16GB of ram.  
+* The S3 paths are hard coded but can be changed. It needs a location for the input files and a location to output in the donwload and upload function respectively.
+* You need to have docker installed. Furthermore, you might have to put yourself in the docker group to actually run this. Something like this `sudo setfacl -m user:ubuntu:rw /var/run/docker.sock`
+* The kneaddata database needs to go in the ~/kneaddata folder for docker to mount it
+* The humann2 database folder needs to go in the ~/humann2 folder for docker to mount it
+* The output folder is mount to ~/output
+
 ### 01. Initialization steps
 ```
 # Install all of the necessary packages including airflow
