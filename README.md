@@ -74,7 +74,7 @@ A quick overview of the operators and hooks used:
 
 ## How to Run
 
-### Initialization steps
+### 01. Initialization steps
 ```
 # Install all of the necessary packages including airflow
 pipenv install
@@ -92,7 +92,7 @@ pipenv run airflow scheduler
 cp -r pset_final/dags ~/airflow
 ```
 
-### Initialize the databases for the pipeline
+### 02. Initialize the databases for the pipeline
 ```
 # Kneaddata database - ~3.5GB(slow server)
 pipenv run kneaddata_database --download human_genome bowtie2 ~/kneaddata
@@ -102,7 +102,11 @@ pipenv run humann2_databases --download chocophlan full ~/humann2
 pipenv run humann2_databases --download uniref uniref90_ec_filtered_diamond ~/humann2
 ```
 
-### Run dag
+### 03. (Optional) Configure AWS Hook
+
+In my case, I set my EC2 instance to be in the same security group as my S3 bucket so my installation came default with the AWS credentials. You can either manually create the credentials file or configure it yourself in the connections tab in the web server.
+
+### 04. Run dag
 ```
 pipenv run airflow trigger_dag metagenomics_docker --conf {'read_name1': 'CSM7KOMH_R1.fastq.gz', 'read_name2': 'CSM7KOMH_R2.fastq.gz'}
 ```
