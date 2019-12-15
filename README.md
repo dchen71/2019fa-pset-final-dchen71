@@ -106,6 +106,8 @@ pipenv run humann2_databases --download uniref uniref90_ec_filtered_diamond ~/hu
 
 In my case, I set my EC2 instance to be in the same security group as my S3 bucket so my installation came default with the AWS credentials. You can either manually create the credentials file or configure it yourself in the connections tab in the web server.
 
+![connection](images/connection.png)
+
 ### 04. Run dag
 ```
 pipenv run airflow trigger_dag metagenomics_docker --conf {'read_name1': 'CSM7KOMH_R1.fastq.gz', 'read_name2': 'CSM7KOMH_R2.fastq.gz'}
@@ -114,6 +116,8 @@ pipenv run airflow trigger_dag metagenomics_docker --conf {'read_name1': 'CSM7KO
 ### 05. Turn on dag
 
 Click the *OFF* button to turn on the dag so it can be scheduled.
+
+![enable](images/enable.png)
 
 ### 06. Wait
 
