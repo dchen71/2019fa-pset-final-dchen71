@@ -109,3 +109,8 @@ venv.bak/
 
 # version
 _version.py
+
+# hiding folders
+kneaddata/
+humann2/
+output/
