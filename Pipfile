@@ -10,8 +10,11 @@ v = {editable = true,version = "*"}
 
 [packages]
 awscli = "*"
-apache-airflow = "*"
-
+apache-airflow = {extras = ["crypto"],version = "*"}
+kneaddata = "*"
+humann2 = "*"
+docker = "*"
+boto3 = "*"
 
 [requires]
 python_version = "3.7"
