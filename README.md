@@ -22,13 +22,13 @@ Apache airflow will be used to facilitate batch jobs. Apache Airflow has similar
 Docker will be used in order to maintain package consistency. Specifically two docker images will be used, one for biobakery/kneaddata which preprocesses metagenomic data by removing human data and biobakery/humann2, which calculates relative abundance of bacterial species in stool samples. It is relatively simple to also setup the connection to pull from Amazon Elastic Container Registry for images to ensure images are not deleted off of dockerhub.  
 
 #### KneadData
-[Kneaddata Link](https://bitbucket.org/biobakery/kneaddata/wiki/Home)  
+[Kneaddata Overview](https://bitbucket.org/biobakery/kneaddata/wiki/Home)  
 This algorithm cleans the raw data. This removes any human contaminant data so you should be left with only bacterial or viral data to feed downstream. Although technically this step is optional, it's better to run it to save time and cost and thus a requirement in this use case.  
 
 Note: This requires a database which is not included in this repository to run.  
 
 #### Humann2
-[Humann2 Link](https://bitbucket.org/biobakery/humann2/wiki/Home)  
+[Humann2 Overview](https://bitbucket.org/biobakery/humann2/wiki/Home)  
 This algorithm has multiple functions. The first step is to quantify the relative abundance of how much bacteria is in the sample. From there, it calculates how much some of these species contribute to gene familes and metabolic pathway function.  
 
 Note: This requires a large database which is not included in this repository to run.  
@@ -45,11 +45,21 @@ This project is cloud focused as the original goal is to develop cloud centric t
 
 **Data Description**:
 
-** Data Pipeline design **:
+**Data Pipeline design**: At a high-level, the pipeline does the following tasks:  
 
-** Design Goals **:
+1. Download data from S3  
+2. Parse the filename for the 1st file for downstream naming conventions  
+3. Run KneadData to preprocess the data from S3  
+4. Merge the two target outputs into a single file  
+5. Run Humann2 to analyze processed data and get abundance and contribution of each microbial species.  
+6. Push the data back into a S3 bucket for later downstream use  
 
-** Pipeline Implementation **:
+**Design Goals**:
+
+**Pipeline Implementation**:
+
+## How to Run
+
 
 ## Future Considerations
 
