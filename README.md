@@ -57,8 +57,20 @@ This project is cloud focused as the original goal is to develop cloud centric t
 ![metagenomics dag](images/pipeline.png)
 
 **Design Goals**:
+* The dag needs to depend on all elements of the past run  
+  * eg. Data needs to download, preprocess, etc  
+* Do not need notifications for now  
+* Do not need to retry on on failures  
 
 **Pipeline Implementation**:
+
+Apache Airflow follows similar principles as Luigi in that they both are Python frameworks used to programmatically create workflows in DAGs. Airflow automatically creates a master dag and has a framework to help visually represent the flow of data via the web server. A **dag** represents the graph and directionality of how you want your tasks in a workflow to be done. Airflow uses **operators** which represent how those tasks get done.  
+
+A quick overview of the operators and hooks used:  
+* `BashOperator`: Runs operations in bash
+* `PythonOperator`: Runs operations in python
+* `DockerOperator`: Runs tasks through a docker image
+* `S3Hook`: Hook to push or pull data from S3
 
 ## How to Run
 
@@ -70,3 +82,4 @@ This project is cloud focused as the original goal is to develop cloud centric t
 * Rebuild this metagenomics pipeline with dynamic dag to allow cleaner ETL by listing all of the samples in a given dag run per experiment or study
 * With how docker works, this can but does not do a true atomic write. By default, it kind of does by creating a temprorarydirectory if the image becomes too big during run. This current implementation of dag directly mounts and writes to the output folder which can be risky for long term production use.
 * Switch from local sqllite database into a full fledged RDBMS for concurrency support
+* Setup connection to dump data to data warehouse
