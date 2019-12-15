@@ -74,6 +74,24 @@ A quick overview of the operators and hooks used:
 
 ## How to Run
 
+### Initialization steps
+```
+# Install all of the necessary packages including airflow
+pipenv install
+
+# Initialize the airflow directory and sqlite database
+pipenv run airflow initdb
+
+# Initialize the webserver
+pipenv run airflow webserver
+
+# Initalize the job scheduler
+pipenv run airflow scheduler
+
+# Move dags to be recognized by airflow
+cp -r pset_final/dags ~/airflow
+```
+
 
 ## Future Considerations
 
