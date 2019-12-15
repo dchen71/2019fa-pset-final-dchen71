@@ -142,4 +142,5 @@ Bioinformatic pipelines usually take a very long time for data to process so wai
 * Rebuild this metagenomics pipeline with dynamic dag to allow cleaner ETL by listing all of the samples in a given dag run per experiment or study
 * With how docker works, this can but does not do a true atomic write. By default, it kind of does by creating a temprorarydirectory if the image becomes too big during run. This current implementation of dag directly mounts and writes to the output folder which can be risky for long term production use.
 * Switch from local sqllite database into a full fledged RDBMS for concurrency support
-* Setup connection to dump data to data warehouse
+* Setup connection and task to dump data to data warehouse
+* Ensure that the S3Hook atomically writes data
