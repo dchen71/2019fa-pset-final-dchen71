@@ -111,6 +111,16 @@ In my case, I set my EC2 instance to be in the same security group as my S3 buck
 pipenv run airflow trigger_dag metagenomics_docker --conf {'read_name1': 'CSM7KOMH_R1.fastq.gz', 'read_name2': 'CSM7KOMH_R2.fastq.gz'}
 ```
 
+### 05. Turn on dag
+
+Click the *OFF* button to turn on the dag so it can be scheduled.
+
+### 06. Wait
+
+Bioinformatic pipelines usually take a very long time for data to process so wait.
+
+### 07. Success? 
+
 
 ## Future Considerations
 
