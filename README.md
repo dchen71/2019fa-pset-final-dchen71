@@ -39,4 +39,21 @@ The data used in this project will be derived from the human microbiome project.
 ### AWS
 This project is cloud focused as the original goal is to develop cloud centric technologies. Although ultimately not implemented, the goal was to set up Airflow with Kubernetes service via AWS EKS. This POC was built on a EC2 shuffling data between S3 in the same region to minimize cost and develop the framework to move towards Kuberentes and docker combined approach.    
 
-## 
+## Technical Implementation
+
+**Overview**: 
+
+**Data Description**:
+
+** Data Pipeline design **:
+
+** Design Goals **:
+
+** Pipeline Implementation **:
+
+## Future Considerations
+
+* Build more common bioinformatic pipelines using Airflow
+* Combine Docker with the kubernetesPodOperator to allow scalibility of this batch processing pipeline
+* Rebuild this metagenomics pipeline with dynamic dag to allow cleaner ETL by listing all of the samples in a given dag run per experiment or study
+* With how docker works, this can but does not do a true atomic write. By default, it kind of does by creating a temprorarydirectory if the image becomes too big during run. This current implementation of dag directly mounts and writes to the output folder which can be risky for long term production use.
