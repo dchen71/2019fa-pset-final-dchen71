@@ -54,6 +54,8 @@ This project is cloud focused as the original goal is to develop cloud centric t
 5. Run Humann2 to analyze processed data and get abundance and contribution of each microbial species.  
 6. Push the data back into a S3 bucket for later downstream use  
 
+![metagenomics dag](images/pipeline.png)
+
 **Design Goals**:
 
 **Pipeline Implementation**:
