@@ -41,9 +41,9 @@ This project is cloud focused as the original goal is to develop cloud centric t
 
 ## Technical Implementation
 
-**Overview**: 
+**Overview**: This is a POC airflow based pipeline used to analyze metagenomic sequences using the standard kneaddata/humann2 workflow. The high level goal of this POC is to test the feasibility of using airflow to manage and handle batch processing of data in the cloud. The metagenomics pipeline was chosen because it runs one or two algorithms to output relatively small files given the size of the input. Furthermore, metagenomics is a growing field and bioinformaticians will be increasingly using this standard pipeline.  
 
-**Data Description**:
+**Data Description**: The source data lives in a S3 bucket. The source data consists of .fastq or .fastq.gz files sourced from metagenomic experiments. This will not work with 16S experimental data as it is a completely different pipeline.  
 
 **Data Pipeline design**: At a high-level, the pipeline does the following tasks:  
 
@@ -90,6 +90,21 @@ pipenv run airflow scheduler
 
 # Move dags to be recognized by airflow
 cp -r pset_final/dags ~/airflow
+```
+
+### Initialize the databases for the pipeline
+```
+# Kneaddata database - ~3.5GB(slow server)
+pipenv run kneaddata_database --download human_genome bowtie2 ~/kneaddata
+
+# Humann2 databases - ~6.5GB(slow server)
+pipenv run humann2_databases --download chocophlan full ~/humann2
+pipenv run humann2_databases --download uniref uniref90_ec_filtered_diamond ~/humann2
+```
+
+### Run dag
+```
+pipenv run airflow trigger_dag metagenomics_docker --conf {'read_name1': 'CSM7KOMH_R1.fastq.gz', 'read_name2': 'CSM7KOMH_R2.fastq.gz'}
 ```
 
 
