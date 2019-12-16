@@ -97,7 +97,7 @@ def upload(**kwargs):
     s3 = S3Hook()
     files = os.listdir(os.path.abspath('output'))
     file_base = kwargs['ti'].xcom_pull(task_ids = "parse_filename")
-    [s3.load_file(os.path.join(os.path.abspath('output'), file_name), os.path.join('output', file_name), bucket_name = 'airflow-project', replace = True) for file_name in files if not os.path.isdir(os.path.join(os.path.join.abspath('output'), file_name))]
+    [s3.load_file(os.path.join(os.path.abspath('output'), file_name), os.path.join('output', file_name), bucket_name = 'airflow-project', replace = True) for file_name in files if not os.path.isdir(os.path.join(os.path.abspath('output'), file_name))]
     [s3.load_file(os.path.join(os.path.abspath('output'), file_base + '_kneaddata_paired_humann2_temp', file_name), os.path.join('output', file_name), bucket_name = 'airflow-project', replace = True) for file_name in os.listdir(os.path.join(os.path.abspath('output'), file_base + '_kneaddata_paired_humann2_temp'))]
 
 upload_task = PythonOperator(
