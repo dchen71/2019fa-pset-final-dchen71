@@ -56,6 +56,13 @@ This project is cloud focused as the original goal is to develop cloud centric t
 
 ![metagenomics dag](images/pipeline.png)
 
+*download_data*: Airflow uses boto3 behind the scenes to handle the requests. This task pulls configuration variables which are passed as context variables into a function to do the job. The paths are created via os to not be hard coded and list comprehension is used to keep the downloading task clean.  
+*parse_filename*: To pass information between tasks, airflow has something called a xcom. Airflow also uses jinja2 behind the scenes to help template text fields. In this task, I am simply calling Bash to parse a name using the jinja2 templating engine to pass downstream.
+*kneaddata*: In order to keep an absolute version lock of package versions and dependencies, Docker was used here. This uses os to manage the paths to mount in docker and jinja templating to pull the xcom variable defined earlier in the pipeline.  
+*merge_paired_end_reads*: This is a necessary step for humann2. Humann2 does not natively handle paired end reads and recommend combining two output files from kneaddata. This just uses jinja2.  
+*humann2*: This task also uses docker in order to version lock the package to ensure that it is idempotent. This similarly uses os to manage paths and jinja2 to help template the xcom variable.  
+*upload_to_s3*:  Similar to the download_data task, this is using boto3 to help manage the uploading of data. This will upload all of the files made by kneaddata and humann2 including useful data hidden it what the algorithm considers a temp directory. This uses a combinations of list comprehension, os.path, and the context variable in order to find files and upload them to a bucket and directory structure.
+
 **Design Goals**:
 * The dag needs to depend on all elements of the past run  
   * eg. Data needs to download, preprocess, etc  
@@ -139,8 +146,8 @@ Bioinformatic pipelines usually takes hours for data to process so wait.
 
 * Build more common bioinformatic pipelines using Airflow
 * Combine Docker with the kubernetesPodOperator to allow scalibility of this batch processing pipeline
-* Rebuild this metagenomics pipeline with dynamic dag to allow cleaner ETL by listing all of the samples in a given dag run per experiment or study
-* With how docker works, this can but does not do a true atomic write. By default, it kind of does by creating a temprorarydirectory if the image becomes too big during run. This current implementation of dag directly mounts and writes to the output folder which can be risky for long term production use.
+* Rebuild this metagenomics pipeline with dynamic dag to allow cleaner ETL by listing all of the samples in a given dag run per experiment or study for example
+* With how docker works, this can but does not do a true atomic write. By default, it kind of does by creating a temprorarydirectory if the image becomes too big during run. This current implementation of dag directly mounts and writes to the output folder which can be risky for long term production use. This will need some intermediate step which creates a temporarydirectory to output and to move everything there on finish otherwise there will be temporary files written upon failure.
 * Switch from local sqllite database into a full fledged RDBMS for concurrency support
 * Setup connection and task to dump data to data warehouse
-* Ensure that the S3Hook atomically writes data
+* Ensure that the S3Hook atomically writes data to ensure no broken pipe data used in pipeline
