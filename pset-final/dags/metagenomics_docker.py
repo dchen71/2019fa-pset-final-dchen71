@@ -18,13 +18,15 @@ args = {
     'start_date': datetime.now() - timedelta(days = 1),
 }
 
-# Create the head dag
+# Create the head dag using parameters from the arguments. 
+# Batch job so no schedule interval
 dag = DAG(
     dag_id='metagenomics_docker', 
     default_args=args,
     schedule_interval=None)
 
 # Create the S3 download function
+# Reads in the configuration reads and downloads them from a predefined bucket and file structure on S3 and downloads locally
 def download(**kwargs):
     s3 = S3Hook()
     file_list = [kwargs['dag_run'].conf.get(read) for read in ['read1_name', 'read2_name']] # Pull conf names
