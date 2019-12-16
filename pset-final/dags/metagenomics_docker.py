@@ -30,10 +30,10 @@ def download(**kwargs):
     r2 = kwargs['dag_run'].conf.get('read2_name')
     obj1 = s3.get_key('microbiome/' + r1,
                       bucket_name = 'airflow-project')
-    obj1.download_file(os.path.abspath('data') + '/' + r1)
+    obj1.download_file(os.path.join(os.path.abspath('data'), r1))
     obj2 = s3.get_key('microbiome/' + r2,
                       bucket_name = 'airflow-project')
-    obj2.download_file(os.path.abspath('data') + '/' + r2)
+    obj2.download_file(os.path.join(os.path.abspath('data'), r2))
 
 # Downloader Operator
 downloader = PythonOperator(
