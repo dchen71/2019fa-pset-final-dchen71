@@ -1,6 +1,7 @@
 '''
 Metagenomics Docker
 Docker based pipeline to run the humann2 metagenomics pipeline
+Ex: airflow trigger_dag metagenomics_docker --conf '{"read1_name":"CSM_R1.fastq", "read2_name":"CSM_R2.fastq"}'
 '''
 
 from airflow.operators.bash_operator import BashOperator
@@ -11,7 +12,7 @@ from airflow.models import DAG
 from datetime import datetime, timedelta
 import os
 
-# Basic arguemnts to pass to Airflow
+# Basic arguments to pass to Airflow for initialization
 args = {
     'owner': 'airflow',
     'start_date': datetime.now() - timedelta(days = 1),
@@ -23,17 +24,11 @@ dag = DAG(
     default_args=args,
     schedule_interval=None)
 
-# Create the downloader function
+# Create the S3 download function
 def download(**kwargs):
     s3 = S3Hook()
-    r1 = kwargs['dag_run'].conf.get('read1_name')
-    r2 = kwargs['dag_run'].conf.get('read2_name')
-    obj1 = s3.get_key('microbiome/' + r1,
-                      bucket_name = 'airflow-project')
-    obj1.download_file(os.path.join(os.path.abspath('data'), r1))
-    obj2 = s3.get_key('microbiome/' + r2,
-                      bucket_name = 'airflow-project')
-    obj2.download_file(os.path.join(os.path.abspath('data'), r2))
+    file_list = [kwargs['dag_run'].conf.get(read) for read in ['read1_name', 'read2_name']] # Pull conf names
+    [s3.get_key(os.path.join('microbiome', file_name), bucket_name = 'airflow-project').download_file(os.path.join(os.path.abspath('data'), file_name)) for file_name in file_list] # Get path from S3 and download locally
 
 # Downloader Operator
 downloader = PythonOperator(
