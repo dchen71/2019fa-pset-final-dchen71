@@ -37,7 +37,7 @@ Note: This requires a large database which is not included in this repository to
 The data used in this project will be derived from the human microbiome project. This will be the raw metagenomic fastq files from fecal data specifically sourced from the Inflammatory Bowel Syndrome study. The raw WGS fastq data can be downloaded [here](https://portal.hmpdacc.org/search/s?filters=%7B%22op%22:%22and%22,%22content%22:%5B%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22cases.sample_body_site%22,%22value%22:%5B%22feces%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22cases.study_name%22,%22value%22:%5B%22IBDMDB%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22files.file_format%22,%22value%22:%5B%22FASTQ%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22files.file_type%22,%22value%22:%5B%22wgs_raw_seq_set%22%5D%7D%7D%5D%7D&facetTab=cases) but it is advised to download a few paired end samples for testing as the entire dataset is 2TB. For those not familiar with bioinformatic data in general, on a high level it is collecting DNA from somewhere and analyzing it in a sequencer machine to get raw chunks of DNA sequences. From these chunks of DNA sequences, we align them to a reference to figure out roughly how much of these chunks match a certain species for instance if it comes from a person. From there, there are more algorithms run based on the experiment to get more usable data for the downstream analyst.   
 
 ### AWS
-This project is cloud focused as the original goal is to develop cloud centric technologies. Although ultimately not implemented, the goal was to set up Airflow with Kubernetes service via AWS EKS. This POC was built on a EC2 shuffling data between S3 in the same region to minimize cost and develop the framework to move towards Kuberentes and docker combined approach.    
+This project is cloud focused as the original goal is to develop cloud centric technologies. Although ultimately not implemented, the goal was to set up Airflow with Kubernetes service via AWS Elastic Kuberenetes Service to have a scalable option. This POC was built on a EC2 instance which shuffles data between S3 in the same region to minimize cost and develop the framework to move towards Kubernetes and docker combined approach.    
 
 ## Technical Implementation
 
@@ -80,6 +80,7 @@ A quick overview of the operators and hooks used:
 * The database files to run kneaddata and humann2 must be downloaded! 
 * This can use a lot of hard drive space with decompression and all of the temporary files generated during several steps in the process 
 * You need to have docker installed. Furthermore, you might have to put yourself in the docker group to actually run this. Something like this `sudo setfacl -m user:ubuntu:rw /var/run/docker.sock`
+* Airflow uses gunicorn to host the webserver so it will not run. If interested in testing it out on Windows, try the puckel docker image for airflow.
 
 ### 01. Initialization steps
 ```
