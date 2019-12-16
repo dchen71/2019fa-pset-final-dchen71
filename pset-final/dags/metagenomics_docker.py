@@ -28,6 +28,7 @@ dag = DAG(
 # Create the S3 download function
 # Reads in the configuration reads and downloads them from a predefined bucket and file structure on S3 and downloads locally
 def download(**kwargs):
+    """ Uses the configuration context to download paired end reads from S3 and cache locally """
     s3 = S3Hook()
     file_list = [kwargs['dag_run'].conf.get(read) for read in ['read1_name', 'read2_name']] # Pull conf names
     [s3.get_key(os.path.join('microbiome', file_name), bucket_name = 'airflow-project').download_file(os.path.join(os.path.abspath('data'), file_name)) for file_name in file_list] # Get path from S3 and download locally
