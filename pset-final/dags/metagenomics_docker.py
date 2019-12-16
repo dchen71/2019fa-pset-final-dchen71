@@ -53,7 +53,7 @@ kneaddata = DockerOperator(
         task_id = 'kneaddata',
         image = 'biobakery/kneaddata:0.7.2',
         api_version = 'auto',
-        volumes = ['/home/ubuntu/2019fa-pset-final-dchen71/data:/input', '/home/ubuntu/output:/output', '/home/ubuntu/kneaddata:/db'],
+        volumes = [os.path.abspath('data') + ':/input', os.path.abspath('output') + ':/output', os.path.abspath('kneaddata/drupal') + ':/db'],
         command = 'kneaddata -i /input/{{ dag_run.conf["read1_name"] }} -i /input/{{ dag_run.conf["read2_name"] }} -o /output -db /db',
         docker_url = 'unix://var/run/docker.sock',
         network_mode = 'bridge',
@@ -64,7 +64,7 @@ kneaddata = DockerOperator(
 # Concatenate the paired end reads
 merge_reads = BashOperator(
     task_id='merge_paired_end_reads', 
-    bash_command="cat /home/ubuntu/output/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired_1.fastq /home/ubuntu/output/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired_2.fastq > /home/ubuntu/output/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired.fastq", 
+    bash_command="cat ~/2019fa-pset-final-dchen71/output/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired_1.fastq ~/2019fa-pset-final-dchen71/output/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired_2.fastq > ~/2019fa-pset-final-dchen71/output/{{ti.xcom_pull(key = 'return_value')}}_kneaddata_paired.fastq", 
     dag=dag)
 
 
@@ -83,7 +83,7 @@ humann2 = DockerOperator(
         task_id = 'humann2',
         image = 'biobakery/humann2:2.8.0',
         api_version = 'auto',
-        volumes = ['/home/ubuntu/output:/input', '/home/ubuntu/output:/output', '/home/ubuntu/humann2:/humann2'],
+        volumes = [os.path.abspath('output') + ':/input', os.path.abspath('output') + ':/output', os.path.abspath('humann2') + ':/humann2'],
         command = humann_cmd,
         docker_url = 'unix://var/run/docker.sock',
         network_mode = 'bridge',
@@ -91,12 +91,14 @@ humann2 = DockerOperator(
         )
 
 # Define upload function
+# Upload all of the output into the S3 bucket for later usage
 def upload(**kwargs):
+    """ Function to upload all of the output files from Kneaddata and Humann2 and their temporary files """
     s3 = S3Hook()
-    files = os.listdir('/home/ubuntu/output/')
+    files = os.listdir(os.path.abspath('output'))
     file_base = kwargs['ti'].xcom_pull(task_ids = "parse_filename")
-    [s3.load_file('/home/ubuntu/output/' + file_name, 'output/' + file_name, bucket_name = 'airflow-project', replace = True) for file_name in files if not os.path.isdir('/home/ubuntu/output/' + file_name)]
-    [s3.load_file('/home/ubuntu/output/'+file_base+'_kneaddata_paired_humann2_temp/' + file_name, 'output/' + file_name, bucket_name = 'airflow-project', replace = True) for file_name in os.listdir('/home/ubuntu/output/'+file_base+'_kneaddata_paired_humann2_temp')]
+    [s3.load_file(os.path.join(os.path.abspath('output'), file_name), os.path.join('output', file_name), bucket_name = 'airflow-project', replace = True) for file_name in files if not os.path.isdir(os.path.join(os.path.join.abspath('output'), file_name))]
+    [s3.load_file(os.path.join(os.path.abspath('output'), file_base + '_kneaddata_paired_humann2_temp', file_name), os.path.join('output', file_name), bucket_name = 'airflow-project', replace = True) for file_name in os.listdir(os.path.join(os.path.abspath('output'), file_base + '_kneaddata_paired_humann2_temp'))]
 
 upload_task = PythonOperator(
         python_callable = upload,
