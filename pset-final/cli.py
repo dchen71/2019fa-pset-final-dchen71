@@ -12,7 +12,6 @@ parser.add_argument("-s2", "--sample2")
 args = parser.parse_args()
 
 def main(args=args):
-    # Run subprocess to run bash process to call airflow and trigguer job
+    # Run subprocess to run bash process to call airflow and trigger job
     subprocess_args = ["airflow", "trigger_dag", "metagenomics_docker", "--conf", "{\"read1_name\": \"" + args.sample1 + "\", \"read2_name\": \"" + args.sample2 + "\"}"]
-    print(subprocess_args)
     subprocess.Popen(subprocess_args, shell = False)

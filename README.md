@@ -16,22 +16,22 @@ This repository is a proof of concept of the usability of Apache Airflow in the 
 ## Methodology
 
 ### Apache Airflow
-Apache airflow will be used to facilitate batch jobs. Apache Airflow has similar features to Luigi but appears to offer more flexibility to various tasks and functions as well as a nice UI to help visualize pipeline status.  
+Apache airflow will be used to facilitate batch jobs. Apache Airflow has similar features to Luigi but appears to offer more flexibility to various tasks and functions as well as a nice UI to help visualize pipeline status. Airflow requires enabling the web server and job scheduler in order to function. There are more advanced configurations to make this production ready that has not been implemented yet. 
 
 ### Docker
-Docker will be used in order to maintain package consistency. Specifically two docker images will be used, one for biobakery/kneaddata which preprocesses metagenomic data by removing human data and biobakery/humann2, which calculates relative abundance of bacterial species in stool samples. It is relatively simple to also setup the connection to pull from Amazon Elastic Container Registry for images to ensure images are not deleted off of dockerhub.  
+Docker will be used in order to maintain package consistency. Specifically two docker images will be used, one for biobakery/kneaddata which preprocesses metagenomic data by removing human data and biobakery/humann2, which calculates relative abundance of bacterial species in stool samples. It is relatively simple to also setup the connection to pull from Amazon Elastic Container Registry for images to ensure images are not deleted off of dockerhub. This implementation uses images from dockerhub.  
 
 #### KneadData
 [Kneaddata Overview](https://bitbucket.org/biobakery/kneaddata/wiki/Home)  
 This algorithm cleans the raw data. This removes any human contaminant data so you should be left with only bacterial or viral data to feed downstream. Although technically this step is optional, it's better to run it to save time and cost and thus a requirement in this use case.  
 
-Note: This requires a database which is not included in this repository to run.  
+Note: This requires a database which is not included in this repository to run. See instructions at the bottom for downloading.  
 
 #### Humann2
 [Humann2 Overview](https://bitbucket.org/biobakery/humann2/wiki/Home)  
 This algorithm has multiple functions. The first step is to quantify the relative abundance of how much bacteria is in the sample. From there, it calculates how much some of these species contribute to gene familes and metabolic pathway function.  
 
-Note: This requires a large database which is not included in this repository to run.  
+Note: This requires a large database which is not included in this repository to run. See instructions at the bottom for downloading.  
 
 ### Data
 The data used in this project will be derived from the human microbiome project. This will be the raw metagenomic fastq files from fecal data specifically sourced from the Inflammatory Bowel Syndrome study. The raw WGS fastq data can be downloaded [here](https://portal.hmpdacc.org/search/s?filters=%7B%22op%22:%22and%22,%22content%22:%5B%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22cases.sample_body_site%22,%22value%22:%5B%22feces%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22cases.study_name%22,%22value%22:%5B%22IBDMDB%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22files.file_format%22,%22value%22:%5B%22FASTQ%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22files.file_type%22,%22value%22:%5B%22wgs_raw_seq_set%22%5D%7D%7D%5D%7D&facetTab=cases) but it is advised to download a few paired end samples for testing as the entire dataset is 2TB. For those not familiar with bioinformatic data in general, on a high level it is collecting DNA from somewhere and analyzing it in a sequencer machine to get raw chunks of DNA sequences. From these chunks of DNA sequences, we align them to a reference to figure out roughly how much of these chunks match a certain species for instance if it comes from a person. From there, there are more algorithms run based on the experiment to get more usable data for the downstream analyst.   
@@ -47,10 +47,10 @@ This project is cloud focused as the original goal is to develop cloud centric t
 
 **Data Pipeline design**: At a high-level, the pipeline does the following tasks:  
 
-1. Download data from S3  
+1. Download data from S3 for local processing 
 2. Parse the filename for the 1st file for downstream naming conventions  
-3. Run KneadData to preprocess the data from S3  
-4. Merge the two target outputs into a single file  
+3. Run KneadData Docker image to preprocess the sequencing data  
+4. Merge the two target upstream outputs into a single file due to humann2 requirements  
 5. Run Humann2 to analyze processed data and get abundance and contribution of each microbial species.  
 6. Push the data back into a S3 bucket for later downstream use  
 
@@ -76,12 +76,10 @@ A quick overview of the operators and hooks used:
 
 ### 00. Notes
 
-* It is recommended to at least have 16GB of ram.  
-* The S3 paths are hard coded but can be changed. It needs a location for the input files and a location to output in the donwload and upload function respectively.
+* It is recommended to at least have 16GB of ram.
+* The database files to run kneaddata and humann2 must be downloaded! 
+* This can use a lot of hard drive space with decompression and all of the temporary files generated during several steps in the process 
 * You need to have docker installed. Furthermore, you might have to put yourself in the docker group to actually run this. Something like this `sudo setfacl -m user:ubuntu:rw /var/run/docker.sock`
-* The kneaddata database needs to go in the ~/kneaddata folder for docker to mount it
-* The humann2 database folder needs to go in the ~/humann2 folder for docker to mount it
-* The output folder is mount to ~/output
 
 ### 01. Initialization steps
 ```
@@ -91,29 +89,30 @@ pipenv install
 # Initialize the airflow directory and sqlite database
 pipenv run airflow initdb
 
-# Initialize the webserver
+# Initialize the webserver(use tmux or screen or run as a system process)
 pipenv run airflow webserver
 
-# Initalize the job scheduler
+# Initalize the job scheduler(use tmux or screen or run as a system process)
 pipenv run airflow scheduler
 
 # Move dags to be recognized by airflow
-cp -r pset_final/dags ~/airflow
+cp -r ./pset_final/dags ~/airflow
 ```
 
 ### 02. Initialize the databases for the pipeline
 ```
 # Kneaddata database - ~3.5GB(slow server)
-pipenv run kneaddata_database --download human_genome bowtie2 ~/kneaddata
+pipenv run kneaddata_database --download human_genome bowtie2 kneaddata
 
 # Humann2 databases - ~6.5GB(slow server)
-pipenv run humann2_databases --download chocophlan full ~/humann2
-pipenv run humann2_databases --download uniref uniref90_ec_filtered_diamond ~/humann2
+pipenv run humann2_databases --download chocophlan full humann2
+pipenv run humann2_databases --download uniref uniref90_ec_filtered_diamond humann2
+pipenv run humann2_databases --download utility_mapping full humann2
 ```
 
 ### 03. (Optional) Configure AWS Hook
 
-In my case, I set my EC2 instance to be in the same security group as my S3 bucket so my installation came default with the AWS credentials. You can either manually create the credentials file or configure it yourself in the connections tab in the web server.
+In my case, I set my EC2 instance to be in the same security group as my S3 bucket so my installation came default with the AWS credentials. You can either manually create the aws credentials file, boto configuration file, or configure it yourself in the connections tab in the web server.
 
 ![connection](images/connection.png)
 
@@ -130,7 +129,7 @@ Click the *OFF* button to turn on the dag so it can be scheduled.
 
 ### 06. Wait
 
-Bioinformatic pipelines usually take a very long time for data to process so wait.
+Bioinformatic pipelines usually takes hours for data to process so wait.
 
 ### 07. Success? 
 
