@@ -12,8 +12,8 @@ from moto import mock_s3
 from airflow.models import DagBag
 import pset_final.dags.metagenomics_docker
 
-class DownloadTestCase(TestCase):
-    ''' Test cases for airflow to download data for processing
+class S3TestCase(TestCase):
+    ''' Test cases for airflow to handle S3 pushing and pulling
 
     '''
     @mock_s3
@@ -24,6 +24,19 @@ class DownloadTestCase(TestCase):
         conn.put_object(Bucket='airflow-project', Key= 'microbiome/testing_R1.fastq.gz', Body='') # Fill virtual bucket
         conn.download_file('airflow-project','microbiome/testing_R1.fastq.gz', 'data/testing_R1.fastq.gz')
         self.assertEqual(os.path.exists('data/testing_R1.fastq.gz'), True)
+
+    @mock_s3
+    def test_UploadRead(self):
+        ''' Ensure that files can be pushed to S3 '''
+        conn = boto3.client('s3', region_name = 'us-west-1')
+        conn.create_bucket(Bucket = 'airflow-project')
+        f = open('testing.txt', 'w+')
+        f.close()
+        conn.upload_file('testing.txt', 'airflow-project', 'testing.txt')
+        os.remove("testing.txt")
+        conn.download_file('airflow-project', 'testing.txt', 'testing.txt')
+        self.assertEqual(os.path.exists('testing.txt'), True)
+
 
 
 
