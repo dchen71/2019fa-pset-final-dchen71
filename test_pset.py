@@ -9,7 +9,8 @@ import os
 import boto3
 import mock
 from moto import mock_s3
-
+from airflow.models import DagBag
+import pset_final.dags.metagenomics_docker
 
 class DownloadTestCase(TestCase):
     ''' Test cases for airflow to download data for processing
@@ -26,3 +27,18 @@ class DownloadTestCase(TestCase):
         self.assertEqual(os.path.exists('data/testing_R1.fastq.gz'), True)
 
 
+
+
+class IntegrationTestCase(TestCase):
+    """ Basic Integration Tests """
+    dagbag = DagBag()
+    dag_id = pset_final.dags.metagenomics_docker
+    dag = dagbag.get_dag(dag_id)
+    args = dag.default_args
+
+    def test_dag_logic_and_syntax(self):
+        """Verify that there are no logical or syntactical errors in DAG.
+
+        Ideal response should return 0 errors (status == False).
+        """
+        assert not len(dagbag.import_errors)
