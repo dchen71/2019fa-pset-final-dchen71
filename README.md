@@ -104,11 +104,12 @@ cp -r pset_final/dags ~/airflow
 ### 02. Initialize the databases for the pipeline
 ```
 # Kneaddata database - ~3.5GB(slow server)
-pipenv run kneaddata_database --download human_genome bowtie2 ~/kneaddata
+pipenv run kneaddata_database --download human_genome bowtie2 kneaddata
 
 # Humann2 databases - ~6.5GB(slow server)
-pipenv run humann2_databases --download chocophlan full ~/humann2
-pipenv run humann2_databases --download uniref uniref90_ec_filtered_diamond ~/humann2
+pipenv run humann2_databases --download chocophlan full humann2
+pipenv run humann2_databases --download uniref uniref90_ec_filtered_diamond humann2
+pipenv run humann2_databases --download utility_mapping full humann2
 ```
 
 ### 03. (Optional) Configure AWS Hook
