@@ -150,4 +150,3 @@ Bioinformatic pipelines usually takes hours for data to process so wait.
 * With how docker works, this can but does not do a true atomic write. By default, it kind of does by creating a temprorarydirectory if the image becomes too big during run. This current implementation of dag directly mounts and writes to the output folder which can be risky for long term production use. This will need some intermediate step which creates a temporarydirectory to output and to move everything there on finish otherwise there will be temporary files written upon failure.
 * Switch from local sqllite database into a full fledged RDBMS for concurrency support
 * Setup connection and task to dump data to data warehouse
-* Ensure that the S3Hook atomically writes data to ensure no broken pipe data used in pipeline
