@@ -9,6 +9,7 @@ pytest-cov = "*"
 v = {editable = true,version = "*"}
 mock = "*"
 moto = "*"
+pytest-helpers-namespace = "*"
 
 [packages]
 awscli = "*"
